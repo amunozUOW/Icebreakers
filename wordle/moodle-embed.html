@@ -1,0 +1,434 @@
+<!--
+  ============================================================
+  MOODLE EMBED: Wordle Vocabulary Game
+  ============================================================
+  To use this in Moodle:
+  1. Create a new Page resource (or edit an existing one).
+  2. In the editor, click the HTML source button (</>).
+  3. Copy and paste EVERYTHING below into the HTML editor.
+  4. To change the target word, triple-click the small "v1.0"
+     text at the bottom of the game to open the setup screen.
+     Alternatively, change the DEFAULT_WORD value below.
+  5. Save the page.
+  ============================================================
+-->
+
+<style>
+    @keyframes wordle-shake {
+        0%, 100% { transform: translateX(0); }
+        20% { transform: translateX(-4px); }
+        40% { transform: translateX(4px); }
+        60% { transform: translateX(-4px); }
+        80% { transform: translateX(4px); }
+    }
+    @keyframes wordle-pop {
+        0% { transform: scale(1); }
+        50% { transform: scale(1.12); }
+        100% { transform: scale(1); }
+    }
+    @keyframes wordle-flip {
+        0% { transform: rotateX(0); }
+        50% { transform: rotateX(90deg); }
+        100% { transform: rotateX(0); }
+    }
+</style>
+
+<div id="wordle-game-root" style="background-color: #121213; padding: 30px; border-radius: 12px; margin: 0 auto; max-width: 1400px; box-shadow: 0 4px 20px rgba(0,0,0,0.3); font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; color: white;">
+
+    <h1 style="margin-bottom: 20px; color: white; text-align: center; font-size: 28px;">Tutorial Wordle</h1>
+
+    <div style="display: flex; max-width: 1200px; margin: 0 auto; gap: 40px; align-items: flex-start; flex-wrap: wrap; justify-content: center;">
+        <!-- Main Game Area -->
+        <div id="wg-game-container" style="flex: 1; min-width: 340px; max-width: 500px; display: flex; flex-direction: column; align-items: center;">
+            <div id="wg-hint" style="font-size: 15px; color: #818384; margin-bottom: 14px; text-align: center;"></div>
+            <div id="wg-grid-container" style="margin-bottom: 20px; display: flex; justify-content: center; align-items: center; width: 100%;"></div>
+
+            <div id="wg-keyboard" style="margin-bottom: 20px; text-align: center;">
+                <div style="margin-bottom: 5px; display: flex; justify-content: center;">
+                    <button class="wg-key" data-wg-key="Q" style="margin: 2px; padding: 14px 8px; background-color: #818384; color: white; border: none; border-radius: 4px; font-weight: bold; cursor: pointer; min-width: 36px; font-size: 14px;">Q</button>
+                    <button class="wg-key" data-wg-key="W" style="margin: 2px; padding: 14px 8px; background-color: #818384; color: white; border: none; border-radius: 4px; font-weight: bold; cursor: pointer; min-width: 36px; font-size: 14px;">W</button>
+                    <button class="wg-key" data-wg-key="E" style="margin: 2px; padding: 14px 8px; background-color: #818384; color: white; border: none; border-radius: 4px; font-weight: bold; cursor: pointer; min-width: 36px; font-size: 14px;">E</button>
+                    <button class="wg-key" data-wg-key="R" style="margin: 2px; padding: 14px 8px; background-color: #818384; color: white; border: none; border-radius: 4px; font-weight: bold; cursor: pointer; min-width: 36px; font-size: 14px;">R</button>
+                    <button class="wg-key" data-wg-key="T" style="margin: 2px; padding: 14px 8px; background-color: #818384; color: white; border: none; border-radius: 4px; font-weight: bold; cursor: pointer; min-width: 36px; font-size: 14px;">T</button>
+                    <button class="wg-key" data-wg-key="Y" style="margin: 2px; padding: 14px 8px; background-color: #818384; color: white; border: none; border-radius: 4px; font-weight: bold; cursor: pointer; min-width: 36px; font-size: 14px;">Y</button>
+                    <button class="wg-key" data-wg-key="U" style="margin: 2px; padding: 14px 8px; background-color: #818384; color: white; border: none; border-radius: 4px; font-weight: bold; cursor: pointer; min-width: 36px; font-size: 14px;">U</button>
+                    <button class="wg-key" data-wg-key="I" style="margin: 2px; padding: 14px 8px; background-color: #818384; color: white; border: none; border-radius: 4px; font-weight: bold; cursor: pointer; min-width: 36px; font-size: 14px;">I</button>
+                    <button class="wg-key" data-wg-key="O" style="margin: 2px; padding: 14px 8px; background-color: #818384; color: white; border: none; border-radius: 4px; font-weight: bold; cursor: pointer; min-width: 36px; font-size: 14px;">O</button>
+                    <button class="wg-key" data-wg-key="P" style="margin: 2px; padding: 14px 8px; background-color: #818384; color: white; border: none; border-radius: 4px; font-weight: bold; cursor: pointer; min-width: 36px; font-size: 14px;">P</button>
+                </div>
+                <div style="margin-bottom: 5px; display: flex; justify-content: center;">
+                    <button class="wg-key" data-wg-key="A" style="margin: 2px; padding: 14px 8px; background-color: #818384; color: white; border: none; border-radius: 4px; font-weight: bold; cursor: pointer; min-width: 36px; font-size: 14px;">A</button>
+                    <button class="wg-key" data-wg-key="S" style="margin: 2px; padding: 14px 8px; background-color: #818384; color: white; border: none; border-radius: 4px; font-weight: bold; cursor: pointer; min-width: 36px; font-size: 14px;">S</button>
+                    <button class="wg-key" data-wg-key="D" style="margin: 2px; padding: 14px 8px; background-color: #818384; color: white; border: none; border-radius: 4px; font-weight: bold; cursor: pointer; min-width: 36px; font-size: 14px;">D</button>
+                    <button class="wg-key" data-wg-key="F" style="margin: 2px; padding: 14px 8px; background-color: #818384; color: white; border: none; border-radius: 4px; font-weight: bold; cursor: pointer; min-width: 36px; font-size: 14px;">F</button>
+                    <button class="wg-key" data-wg-key="G" style="margin: 2px; padding: 14px 8px; background-color: #818384; color: white; border: none; border-radius: 4px; font-weight: bold; cursor: pointer; min-width: 36px; font-size: 14px;">G</button>
+                    <button class="wg-key" data-wg-key="H" style="margin: 2px; padding: 14px 8px; background-color: #818384; color: white; border: none; border-radius: 4px; font-weight: bold; cursor: pointer; min-width: 36px; font-size: 14px;">H</button>
+                    <button class="wg-key" data-wg-key="J" style="margin: 2px; padding: 14px 8px; background-color: #818384; color: white; border: none; border-radius: 4px; font-weight: bold; cursor: pointer; min-width: 36px; font-size: 14px;">J</button>
+                    <button class="wg-key" data-wg-key="K" style="margin: 2px; padding: 14px 8px; background-color: #818384; color: white; border: none; border-radius: 4px; font-weight: bold; cursor: pointer; min-width: 36px; font-size: 14px;">K</button>
+                    <button class="wg-key" data-wg-key="L" style="margin: 2px; padding: 14px 8px; background-color: #818384; color: white; border: none; border-radius: 4px; font-weight: bold; cursor: pointer; min-width: 36px; font-size: 14px;">L</button>
+                </div>
+                <div style="display: flex; justify-content: center;">
+                    <button class="wg-key" data-wg-key="ENTER" style="margin: 2px; padding: 14px 12px; background-color: #818384; color: white; border: none; border-radius: 4px; font-weight: bold; cursor: pointer; min-width: 58px; font-size: 12px;">ENTER</button>
+                    <button class="wg-key" data-wg-key="Z" style="margin: 2px; padding: 14px 8px; background-color: #818384; color: white; border: none; border-radius: 4px; font-weight: bold; cursor: pointer; min-width: 36px; font-size: 14px;">Z</button>
+                    <button class="wg-key" data-wg-key="X" style="margin: 2px; padding: 14px 8px; background-color: #818384; color: white; border: none; border-radius: 4px; font-weight: bold; cursor: pointer; min-width: 36px; font-size: 14px;">X</button>
+                    <button class="wg-key" data-wg-key="C" style="margin: 2px; padding: 14px 8px; background-color: #818384; color: white; border: none; border-radius: 4px; font-weight: bold; cursor: pointer; min-width: 36px; font-size: 14px;">C</button>
+                    <button class="wg-key" data-wg-key="V" style="margin: 2px; padding: 14px 8px; background-color: #818384; color: white; border: none; border-radius: 4px; font-weight: bold; cursor: pointer; min-width: 36px; font-size: 14px;">V</button>
+                    <button class="wg-key" data-wg-key="B" style="margin: 2px; padding: 14px 8px; background-color: #818384; color: white; border: none; border-radius: 4px; font-weight: bold; cursor: pointer; min-width: 36px; font-size: 14px;">B</button>
+                    <button class="wg-key" data-wg-key="N" style="margin: 2px; padding: 14px 8px; background-color: #818384; color: white; border: none; border-radius: 4px; font-weight: bold; cursor: pointer; min-width: 36px; font-size: 14px;">N</button>
+                    <button class="wg-key" data-wg-key="M" style="margin: 2px; padding: 14px 8px; background-color: #818384; color: white; border: none; border-radius: 4px; font-weight: bold; cursor: pointer; min-width: 36px; font-size: 14px;">M</button>
+                    <button class="wg-key" data-wg-key="BACKSPACE" style="margin: 2px; padding: 14px 12px; background-color: #818384; color: white; border: none; border-radius: 4px; font-weight: bold; cursor: pointer; min-width: 58px; font-size: 12px;">&#9003;</button>
+                </div>
+            </div>
+
+            <div id="wg-message" style="margin: 16px 0; font-size: 18px; font-weight: bold; min-height: 28px; text-align: center;"></div>
+            <button id="wg-reset-btn" style="padding: 12px 24px; background-color: #538d4e; color: white; border: none; border-radius: 4px; font-weight: bold; cursor: pointer; font-size: 16px;">Reset</button>
+
+            <div id="wg-educator-link" style="color: #3a3a3c; font-size: 10px; cursor: default; user-select: none; -webkit-user-select: none; margin-top: 20px; text-align: center;">v1.0</div>
+        </div>
+
+        <!-- Instructions Sidebar -->
+        <div style="flex: 0 0 300px; min-width: 260px; background-color: #1a1a1b; padding: 20px; border-radius: 8px; text-align: left; font-size: 14px;">
+            <h3 style="color: white; margin-top: 0; margin-bottom: 10px; font-size: 18px;">How To Play</h3>
+            <p style="color: #d7dadc; margin-bottom: 10px;">Guess the tutorial term in 6 tries.</p>
+            <ul style="color: #d7dadc; margin-bottom: 15px; padding-left: 18px; font-size: 13px;">
+                <li style="margin-bottom: 5px;">Each guess must be a valid word of the correct length.</li>
+                <li style="margin-bottom: 5px;">The colour of the tiles will change to show how close your guess was.</li>
+            </ul>
+            <div>
+                <h4 style="color: white; margin-bottom: 8px; font-size: 14px;">Examples</h4>
+                <div style="margin-bottom: 10px;">
+                    <div style="display: flex; gap: 2px; margin-bottom: 5px;">
+                        <div style="width: 26px; height: 26px; background-color: #538d4e; color: white; display: flex; align-items: center; justify-content: center; font-weight: bold; border-radius: 3px; font-size: 12px;">S</div>
+                        <div style="width: 26px; height: 26px; background-color: #3a3a3c; color: white; display: flex; align-items: center; justify-content: center; font-weight: bold; border-radius: 3px; font-size: 12px;">T</div>
+                        <div style="width: 26px; height: 26px; background-color: #3a3a3c; color: white; display: flex; align-items: center; justify-content: center; font-weight: bold; border-radius: 3px; font-size: 12px;">O</div>
+                        <div style="width: 26px; height: 26px; background-color: #3a3a3c; color: white; display: flex; align-items: center; justify-content: center; font-weight: bold; border-radius: 3px; font-size: 12px;">R</div>
+                        <div style="width: 26px; height: 26px; background-color: #3a3a3c; color: white; display: flex; align-items: center; justify-content: center; font-weight: bold; border-radius: 3px; font-size: 12px;">E</div>
+                    </div>
+                    <p style="color: #d7dadc; margin: 0 0 10px 0; font-size: 11px;"><strong>S</strong> is in the word and in the correct spot.</p>
+                </div>
+                <div style="margin-bottom: 10px;">
+                    <div style="display: flex; gap: 2px; margin-bottom: 5px;">
+                        <div style="width: 26px; height: 26px; background-color: #3a3a3c; color: white; display: flex; align-items: center; justify-content: center; font-weight: bold; border-radius: 3px; font-size: 12px;">B</div>
+                        <div style="width: 26px; height: 26px; background-color: #b59f3b; color: white; display: flex; align-items: center; justify-content: center; font-weight: bold; border-radius: 3px; font-size: 12px;">R</div>
+                        <div style="width: 26px; height: 26px; background-color: #3a3a3c; color: white; display: flex; align-items: center; justify-content: center; font-weight: bold; border-radius: 3px; font-size: 12px;">A</div>
+                        <div style="width: 26px; height: 26px; background-color: #3a3a3c; color: white; display: flex; align-items: center; justify-content: center; font-weight: bold; border-radius: 3px; font-size: 12px;">N</div>
+                        <div style="width: 26px; height: 26px; background-color: #3a3a3c; color: white; display: flex; align-items: center; justify-content: center; font-weight: bold; border-radius: 3px; font-size: 12px;">D</div>
+                    </div>
+                    <p style="color: #d7dadc; margin: 0 0 10px 0; font-size: 11px;"><strong>R</strong> is in the word but in the wrong spot.</p>
+                </div>
+                <div style="margin-bottom: 10px;">
+                    <div style="display: flex; gap: 2px; margin-bottom: 5px;">
+                        <div style="width: 26px; height: 26px; background-color: #3a3a3c; color: white; display: flex; align-items: center; justify-content: center; font-weight: bold; border-radius: 3px; font-size: 12px;">V</div>
+                        <div style="width: 26px; height: 26px; background-color: #3a3a3c; color: white; display: flex; align-items: center; justify-content: center; font-weight: bold; border-radius: 3px; font-size: 12px;">A</div>
+                        <div style="width: 26px; height: 26px; background-color: #3a3a3c; color: white; display: flex; align-items: center; justify-content: center; font-weight: bold; border-radius: 3px; font-size: 12px;">L</div>
+                        <div style="width: 26px; height: 26px; background-color: #3a3a3c; color: white; display: flex; align-items: center; justify-content: center; font-weight: bold; border-radius: 3px; font-size: 12px;">U</div>
+                        <div style="width: 26px; height: 26px; background-color: #3a3a3c; color: white; display: flex; align-items: center; justify-content: center; font-weight: bold; border-radius: 3px; font-size: 12px;">E</div>
+                    </div>
+                    <p style="color: #d7dadc; margin: 0; font-size: 11px;"><strong>U</strong> is not in the word in any spot.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Educator Setup Modal -->
+<div id="wg-modal-overlay" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.7); z-index: 10000; justify-content: center; align-items: center;">
+    <div style="background: #1a1a1b; border: 1px solid #3a3a3c; border-radius: 12px; padding: 30px; max-width: 400px; width: 90%; text-align: center; color: white; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">
+        <h3 style="margin-bottom: 16px; font-size: 20px;">Educator Setup</h3>
+        <p style="color: #818384; font-size: 13px; margin-bottom: 16px;">Enter the target word for this session. Words can be 3 to 14 letters long.</p>
+        <input type="text" id="wg-modal-input" placeholder="e.g. STRATEGY" maxlength="14" autocomplete="off" spellcheck="false" style="width: 100%; padding: 12px; font-size: 18px; font-weight: bold; text-transform: uppercase; text-align: center; background: #121213; border: 2px solid #3a3a3c; border-radius: 6px; color: white; outline: none; margin-bottom: 8px; letter-spacing: 2px; box-sizing: border-box;">
+        <div id="wg-modal-error" style="color: #f5793a; font-size: 12px; min-height: 18px; margin-bottom: 12px;"></div>
+        <div style="display: flex; gap: 10px; justify-content: center;">
+            <button id="wg-modal-cancel" style="padding: 10px 24px; border: none; border-radius: 4px; font-weight: bold; font-size: 14px; cursor: pointer; background: #3a3a3c; color: white;">Cancel</button>
+            <button id="wg-modal-set" style="padding: 10px 24px; border: none; border-radius: 4px; font-weight: bold; font-size: 14px; cursor: pointer; background: #538d4e; color: white;">Set Word &amp; Reset</button>
+        </div>
+    </div>
+</div>
+
+<script>
+(function() {
+    'use strict';
+
+    // ===== EDUCATOR SETTING =====
+    // Change this word to set the default target word, or use the
+    // triple-click setup feature during the session (click "v1.0" 3 times).
+    var DEFAULT_WORD = 'INVENTORY';
+
+    // ===== VALID WORDS DICTIONARY =====
+    var VALID_WORDS = [
+        'ACE','AID','AIM','BID','BUY','CEO','CFO','CRM','CUT','DUE','ERP','FEE','FIT','GAP','GDP','GIG','HIT','IPO','JIT','JOB','KPI','LAW','MAP','MIX','MVP','NET','OKR','OPS','PAY','POS','QMS','RAW','ROI','ROE','RUN','SBU','SET','SIX','SKU','SOP','TAX','TQM','VMS','WIN',
+        'SWOT','GOAL','PLAN','COST','EARN','EDGE','FAIL','FIRM','FLOW','FUND','GAIN','GROW','HIRE','IDEA','LEAN','LEAD','LINK','LOAN','LOSS','MADE','MAKE','MEET','MINE','MOVE','NEED','NOTE','OWED','PAID','PEAK','RATE','RANK','RENT','RISK','ROLE','RULE','SAFE','SALE','SAVE','SELL','SENT','SHOP','SIGN','SOLD','SPAN','SPIN','STEP','STOP','TASK','TEAM','TERM','TEST','TOOL','TURN','TYPE','UNIT','VARY','VISA','WAGE','WORK','ZONE',
+        'SWOTS','GOALS','BRAND','VALUE','CRAFT','PRICE','FOCUS','NICHE','PIVOT','SCALE','MERGE','AGILE','SMART','TREND','AUDIT','ENTRY','FORCE','CHAIN','LEVEL','ASSET','BONUS','BRIEF','BUYER','CARGO','CLAIM','CLASS','CLEAR','CLOSE','COACH','CYCLE','DEBIT','DEFER','DRAFT','DRIVE','EQUIP','EVENT','EXACT','FIXED','FLEET','FRAME','GIANT','GRANT','GROSS','GUARD','HUMAN','INDEX','INPUT','ISSUE','JOINT','JUDGE','KNOWN','LABOR','LARGE','LEGAL','LIMIT','LOCAL','LOGIC','LOWER','MAJOR','MINOR','MODEL','MONEY','MONTH','MULTI','NICHE','OFFER','ORDER','OUTER','OWNER','PANEL','PATCH','PHASE','PITCH','PLACE','PLANT','POINT','POWER','PRIME','PRIOR','PRIZE','PROOF','PROVE','PROXY','QUERY','QUICK','QUOTA','RANGE','RATIO','REACH','READY','REALM','REFER','REIGN','RENEW','REPAY','REPLY','RIDER','ROUND','ROUTE','ROYAL','SCOPE','SCORE','SENSE','SERVE','SETUP','SHARE','SHELF','SHIFT','SHORT','SIGHT','SKILL','SOLVE','SPEND','STAFF','STAGE','STAKE','STAND','START','STATE','STEER','STOCK','STORE','STUDY','STYLE','SUPER','SURGE','TERMS','THEME','THIRD','TITLE','TOKEN','TOOLS','TOTAL','TRACK','TRADE','TRAIT','TREND','TRUST','UNION','UPPER','USAGE','USING','VALID','VALUE','VAULT','WAIVE','WASTE','WHOLE','WORKS','WORTH','WRITE','YIELD',
+        'VISION','BUDGET','GROWTH','MARKET','CHANGE','ETHICS','POLICY','PROFIT','MATRIX','HYBRID','LEADER','TALENT','SUPPLY','DEMAND','MERGER','PORTER','MARGIN','EQUITY','EXPORT','IMPORT','INCOME','INVEST','LAUNCH','MANAGE','METHOD','MOBILE','MUTUAL','NOTICE','OFFICE','ONLINE','OPTION','ORIGIN','OUTPUT','PATENT','PEOPLE','PERIOD','PERMIT','PERSON','RETAIN','RETURN','REVIEW','REWARD','ROSTER','SAFETY','SALARY','SAMPLE','SAVING','SCHEME','SEARCH','SEASON','SECTOR','SELECT','SELLER','SENIOR','SERIES','SERVER','SETTLE','SIGNAL','SIMPLE','SINGLE','SOCIAL','SOURCE','SPREAD','STABLE','STATUS','STEADY','STRAIN','STREAM','STREET','STRESS','STRIKE','STRING','STRONG','STRUCK','STUDIO','SUBMIT','SUDDEN','SUMMIT','SURVEY','SWITCH','SYMBOL','SYSTEM','TACKLE','TARGET','TACTIC','TENDER','TENURE','THEORY','THRIVE','TOGGLE','TOWARD','TRAVEL','TREATY','TRYING','TWELVE','TWENTY','UNIQUE','UNITED','UNLESS','UNLIKE','UPDATE','UPHOLD','URGENT','USEFUL','UTMOST','VACUUM','VARIED','VENDOR','VERSUS','VIRTUE','VOLUME','WAIVER','WARMTH','WEALTH','WEEKLY','WEIGHT','WIDELY','WINDOW','WINNER','WISDOM','WITHIN','WORKER','WORTHY','WRITER',
+        'MISSION','BARRIER','CULTURE','METRICS','JOURNEY','NETWORK','PROCESS','PROJECT','QUALITY','SERVICE','SYNERGY','TACTICS','VENTURE','BALANCE','CAPITAL','DIGITAL','ECONOMY','FINANCE','BACKING','BANKING','BENEFIT','BILLION','CALLING','CAPABLE','CAPTAIN','CAPTURE','CAREFUL','CARRIER','CATALOG','CENTRAL','CERTAIN','CHANNEL','CHAPTER','CHARITY','CLASSIC','CLIMATE','CLOSING','COLLEGE','COMBINE','COMFORT','COMMAND','COMMENT','COMPANY','COMPARE','COMPETE','COMPLEX','CONCEPT','CONCERN','CONDUCT','CONFIRM','CONNECT','CONSENT','CONSIST','CONTACT','CONTAIN','CONTENT','CONTEST','CONTEXT','CONTROL','CONVERT','CORRECT','COUNCIL','COUNTER','COUNTRY','COURAGE','COVERED','CURRENT','CUTTING','DEALING','DECLINE','DEFAULT','DEFENCE','DELIVER','DENSITY','DESKTOP','DEVELOP','DISPLAY','DISPOSE','DIVERSE','DRAWING','DRIVING','DYNAMIC','EARLIER','EDITION','ELEMENT','EMBRACE','EMOTION','ENABLED','ENDLESS','ENFORCE','ENGLISH','ENHANCE','EXAMINE','EXAMPLE','EXECUTE','EXHIBIT','EXPLAIN','EXPLORE','EXPRESS','EXTREME','FACTORY','FACULTY','FAILURE','FASHION','FEATURE','FEDERAL','FINDING','FITNESS','FLOWING','FOREIGN','FOREVER','FORMULA','FORTUNE','FORWARD','FREEDOM','FURTHER','GALLERY','GATEWAY','GENERAL','GENETIC','GETTING','GREATER','GROWING','HARMONY','HEADING','HEALTHY','HEARING','HIGHWAY','HIMSELF','HISTORY','HOLIDAY','HORIZON','HOUSING','HOWEVER','HUNDRED','IMAGINE','IMPROVE','INCLUDE','INITIAL','INQUIRY','INSIGHT','INSTALL','INSTANT','INSTEAD','INTENSE','INTERIM','INVOLVE','JUSTICE','JUSTIFY','KEEPING','LACKING','LARGELY','LASTING','LEADING','LEARNED','LEAVING','LEISURE','LIBERAL','LIBRARY','LICENSE','LIMITED','LOADING','LOOKING','MACHINE','MANAGER','MAXIMUM','MEASURE','MEDICAL','MEETING','MENTION','MESSAGE','MINERAL','MINIMUM','MISSING','MISTAKE','MIXTURE','MONITOR','MONTHLY','MORNING','MYSTERY','NATURAL','NEUTRAL','NOTHING','NUCLEAR','NURSING','OBVIOUS','OFFENSE','OFFICER','ONGOING','OPENING','OPERATE','OPINION','ORGANIC','OUTDOOR','OVERALL','OVERLAP','PACKAGE','PARKING','PARTIAL','PARTNER','PASSAGE','PASSION','PATIENT','PATTERN','PAYMENT','PENALTY','PENSION','PERFECT','PERFORM','PERHAPS','PICTURE','PLASTIC','POPULAR','POVERTY','PRECISE','PREDICT','PREMIER','PREPARE','PRESENT','PREVENT','PRIMARY','PRINTER','PRIVACY','PRIVATE','PROBLEM','PROCEED','PRODUCE','PRODUCT','PROFILE','PROMISE','PROTECT','PROTEST','PROVIDE','PURPOSE','PUSHING','PUTTING','QUARTER','RADICAL','RAILWAY','READILY','REALITY','RECEIVE','RECOVER','REFLECT','REGULAR','RELATED','RELEASE','REMAINS','REMOVAL','REPLACE','REQUIRE','RESERVE','RESOLVE','RESPECT','RESPOND','RESTORE','RETIRED','REVENUE','REVERSE','ROUTINE','RUNNING','SATISFY','SAVINGS','SCANDAL','SCIENCE','SCRATCH','SECTION','SEEKING','SELLING','SENATOR','SENDING','SERIOUS','SESSION','SETTING','SEVERAL','SHARING','SHELTER','SHOWING','SILENCE','SIMILAR','SITTING','SLAVERY','SMOKING','SOCIETY','SOMEHOW','SOMEONE','SPEAKER','SPECIAL','STATION','STORAGE','STRANGE','STUDENT','SUBJECT','SUCCESS','SUGGEST','SUMMARY','SUPPORT','SUPPOSE','SURFACE','SURGERY','SURPLUS','SURVIVE','SUSPECT','TEACHER','TELLING','TEXTURE','THEATER','THERAPY','THROUGH','TONIGHT','TOTALLY','TOWARDS','TRADING','TRAFFIC','TRAILER','TRAINED','TREATED','TROUBLE','TURNING','TYPICAL','UNKNOWN','UNUSUAL','UTILITY','VARIETY','VARIOUS','VEHICLE','VERSION','VILLAGE','VINTAGE','VISIBLE','WAITING','WALKING','WANTING','WARNING','WASHING','WEATHER','WEBSITE','WEDDING','WEEKEND','WELCOME','WELFARE','WESTERN','WHETHER','WILLING','WINNING','WITHOUT','WORKING','WRITING','WRITTEN',
+        'STRATEGY','PLANNING','ANALYSIS','BUSINESS','CUSTOMER','EMPLOYEE','FEEDBACK','IDEOLOGY','LEVERAGE','OPTIMIZE','PLATFORM','RESOURCE','SECURITY','TEAMWORK','ALLIANCE','CAMPAIGN','DELIVERY','EXCHANGE','FORECAST','INVENTORY','ABSOLUTE','ABSTRACT','ACADEMIC','ACCEPTED','ACCIDENT','ACCURATE','ACHIEVED','ACQUIRED','ACTIVITY','ACTUALLY','ADDITION','ADEQUATE','ADJACENT','ADJUSTED','ADVANCED','AIRCRAFT','ALTHOUGH','ANNOUNCE','ANNUALLY','ANYWHERE','APPARENT','APPROACH','APPROVAL','ARGUMENT','ARRANGED','ASSEMBLY','ATTACHED','ATTORNEY','AUDIENCE','BECOMING','BIRTHDAY','BOUNDARY','BREAKING','BRINGING','BUILDING','CALENDAR','CAPACITY','CATEGORY','CHAIRMAN','CHANGING','CHECKING','CHEMICAL','CHILDREN','CHOOSING','CIRCULAR','CLEARING','CLIMBING','CLINICAL','CLOTHING','COACHING','COLLAPSE','COMBINED','COMMERCE','COMMONLY','COMPARED','COMPLETE','COMPOSED','COMPUTER','CONCRETE','CONSIDER','CONSISTS','CONSTANT','CONTAINS','CONTINUE','CONTRACT','CONTRARY','CONTRAST','CONTROLS','CONVINCE','CORRIDOR','COVERING','CREATING','CREATIVE','CRIMINAL','CULTURAL','CURRENCY','DATABASE','DAUGHTER','DEALINGS','DECIDING','DECISION','DECREASE','DEMOCRAT','DESCRIBE','DETAILED','DIAMETER','DIRECTLY','DISABLED','DISASTER','DISCOUNT','DISCOVER','DISTRICT','DIVIDEND','DIVISION','DOMESTIC','DOMINANT','DOWNLOAD','DRAMATIC','DRAWINGS','DROPPING','DURATION','DYNAMICS','EARNINGS','ECONOMIC','EDUCATED','ELECTION','ELECTRIC','ELIGIBLE','EMERGING','ENGAGING','ENGINEER','ENORMOUS','ENTIRELY','ENTITLED','ENVELOPE','EQUALITY','EQUATION','ESTIMATE','EVALUATE','EVERYONE','EVIDENCE','EXAMINED','EXCITING','EXERCISE','EXISTING','EXPANDED','EXPECTED','EXPENSES','EXPLICIT','EXTERNAL','FACILITY','FAMILIAR','FESTIVAL','FILENAME','FINDINGS','FINISHED','FLOATING','FOLLOWED','FOOTBALL','FORMERLY','FRAGMENT','FREQUENT','FRIENDLY','FUNCTION','GENERATE','GRAPHICS','GREATEST','GUIDANCE','HANDLING','HAPPENED','HARDWARE','HEADLINE','HERITAGE','HISTORIC','HOMEPAGE','HOSPITAL','IDENTITY','IMPERIAL','INCLUDES','INCREASE','INDIRECT','INDUSTRY','INFORMAL','INFORMED','INSERTED','INSPIRED','INSTANCE','INTEGRAL','INTENDED','INTERACT','INTEREST','INTERIOR','INTERNAL','INTERNET','INTERVAL','INVOLVED','ISOLATED','JUDGMENT','JUDICIAL','KEYBOARD','LANDLORD','LANGUAGE','LAUNCHED','LEARNING','LIFETIME','LITERARY','LOCATION','MACHINES','MAGAZINE','MAGNETIC','MAINTAIN','MAJORITY','MANAGING','MARRIAGE','MATERIAL','MAXIMIZE','MEASURED','MECHANIC','MEETINGS','MEMORIAL','MENTIONS','MERCHANT','MESSAGES','MIDNIGHT','MILITARY','MILLIONS','MINIMIZE','MINISTRY','MINORITY','MODIFIED','MONITORS','MORTGAGE','MOUNTING','MOVEMENT','MULTIPLE','NATIONAL','NEGATIVE','NEIGHBOR','NORTHERN','NOVEMBER','NUMEROUS','OBTAINED','OCCASION','OCCURRED','OFFERING','OFFICIAL','OPERATOR','OPPONENT','OPPOSITE','OPTIONAL','ORDINARY','ORGANIZE','ORIGINAL','OUTCOMES','OUTLINED','OVERVIEW','PACKAGES','PARALLEL','PARTNERS','PASSAGES','PASSPORT','PATTERNS','PAYMENTS','PEACEFUL','PERSONAL','PHYSICAL','PICTURES','PLEASURE','POLICIES','POLITICS','PORTRAIT','POSITION','POSITIVE','POSSIBLE','POWERFUL','PRACTICE','PRECIOUS','PREPARED','PRESENCE','PRESERVE','PRESSURE','PREVIOUS','PRINCESS','PRIORITY','PROBABLY','PROBLEMS','PRODUCER','PRODUCTS','PROFILES','PROGRAMS','PROJECTS','PROPERTY','PROPOSAL','PROPOSED','PROSPECT','PROTOCOL','PROVIDER','PROVINCE','PURCHASE','QUESTION','RAILROAD','REACHING','REACTION','RECEIVED','RECEIVER','RECENTLY','RECORDED','RECOVERY','REDUCING','REFERRED','REFLECTS','REGIONAL','REGISTER','RELATION','RELATIVE','RELEASED','RELEVANT','RELIABLE','RELIGION','REMEMBER','REMINDER','REPEATED','REPLACED','REPORTED','REPUBLIC','REQUIRED','RESEARCH','RESERVED','RESIDENT','RESPONSE','RETURNED','REVEALED','ROMANTIC','SCHEDULE','SCIENCES','SEARCHED','SECTIONS','SELECTED','SENTENCE','SEPARATE','SEQUENCE','SERVICES','SESSIONS','SETTINGS','SHIPPING','SHOULDER','SLIGHTLY','SOFTWARE','SOLUTION','SOMEBODY','SOMEWHAT','SPEAKING','SPECIFIC','STANDARD','STANDING','STATIONS','STRAIGHT','STRENGTH','STRONGLY','STRUGGLE','STUDENTS','STUDYING','SUBJECTS','SUITABLE','SUPERIOR','SUPPORTS','SUPPOSED','SURPRISE','SURVIVAL','SUSPECTS','SWIMMING','SWITCHES','SYMBOLIC','SYMPTOMS','TEACHERS','TERMINAL','TERRIBLE','THINKING','THOUSAND','TOGETHER','TOMORROW','TOUCHING','TRACKING','TRAINING','TRANSFER','TRAVELED','TREASURY','TREATING','TRIANGLE','TRIGGERS','TROPICAL','TROUBLES','UNIVERSE','UNLIKELY','UPDATING','VACATION','VALUABLE','VARIABLE','VEHICLES','VERSIONS','VERTICAL','VISITING','WARNINGS','WATCHING','WEAKNESS','WEBSITES','WHATEVER','WHENEVER','WHEREVER','WILDLIFE','WIRELESS','YOURSELF',
+        'ADVANTAGE','DASHBOARD','EFFICIENT','FRAMEWORK','KNOWLEDGE','LANDSCAPE','MILESTONE','OWNERSHIP','PORTFOLIO','STRATEGIC','TRANSFORM','VALUATION','WORKFLOW','ABILITIES','ACCIDENTS','ACCOMPANY','ACQUIRING','ADVENTURE','AFTERNOON','AGREEMENT','ALGORITHM','ALLOWANCE','ALONGSIDE','ALTERNATE','AMENDMENT','ANALYZING','ANIMATION','APARTMENT','APPLIANCE','ASSOCIATE','ATTENTION','ATTITUDES','ATTRACTED','ATTRIBUTE','AUTHORITY','AVAILABLE','AWARENESS','BANDWIDTH','BEGINNING','BIOGRAPHY','BREAKFAST','BRILLIANT','BUDGETING','BUILDINGS','CAMPAIGNS','CANDIDATE','CAREFULLY','CATALOGUE','CELEBRATE','CERTAINLY','CHALLENGE','CHEMICALS','CHILDHOOD','CLASSROOM','CLIENTELE','CLIPBOARD','COGNITIVE','COLLECTED','COLLECTOR','COMBINING','COMMITTEE','COMMUNITY','COMPANIES','COMPARING','COMPLAINT','COMPLETED','COMPLIANT','COMPOSITE','COMPOUNDS','COMPUTING','CONCEIVED','CONCERNED','CONDITION','CONDUCTED','CONFIDENT','CONFUSION','CONNECTED','CONSENSUS','CONSISTED','CONSTRUCT','CONSUMERS','CONTACTED','CONTAINER','COUNTRIES','COUNTLESS','COURTROOM','CREATURES','CRITICISM','CUSTOMERS','DATABASES','DAUGHTERS','DECISIONS','DEDICATED','DEFENDANT','DEMOCRACY','DEPENDING','DEPRESSED','DESCRIBED','DESCRIBES','DESPERATE','DETERMINE','DEVELOPED','DEVELOPER','DIAGNOSED','DIFFERENT','DIMENSION','DIRECTORY','DISAPPEAR','DISCUSSES','DISPLAYED','DOCUMENTS','DOWNLOADS','ECONOMIES','EDUCATION','EFFECTIVE','ELECTIONS','EMERGENCY','EMOTIONAL','EMPLOYEES','ENCOUNTER','ENCOURAGE','ENJOYABLE','EQUIPMENT','ESSENTIAL','ESTABLISH','ESTIMATED','EVERYBODY','EXCELLENT','EXCEPTION','EXCLUSIVE','EXECUTIVE','EXERCISES','EXISTENCE','EXPANSION','EXPENSIVE','EXPLAINED','EXPLORING','EXPLOSION','EXTENSION','EXTREMELY','FACTORIES','FANTASTIC','FAVORITES','FEATURING','FINANCIAL','FOLLOWING','FORGOTTEN','FORMATION','FREQUENCY','FUNCTIONS','FURNITURE','GALLERIES','GATHERING','GENERALLY','GEOGRAPHY','GRADUATED','GUARANTEE','GUARDIANS','HAPPENING','HEADLINES','IDENTICAL','IMMEDIATE','IMPLEMENT','IMPORTANT','IMPRESSED','IMPROVING','INCLUDING','INCREASED','INDICATED','INFLUENCE','INJECTION','INQUIRIES','INSERTION','INSPIRING','INSTALLED','INSTANCES','INSTANTLY','INSURANCE','INTEGRATE','INTENSITY','INTENTION','INTERFACE','INTERESTS','INTERPRET','INTERVIEW','INVENTORY','INVESTING','INVISIBLE','INVOLVING','JUDGEMENT','LANGUAGES','LAUNCHING','LIABILITY','LIBRARIES','LICENSING','LIFESTYLE','LITERALLY','LOCATIONS','MACHINERY','MAGAZINES','MAINTAINS','MATERIALS','MEANWHILE','MECHANISM','MEDICINES','MENTIONED','MERCHANTS','MODIFYING','MOUNTAINS','MOVEMENTS','MUNICIPAL','NEIGHBORS','NOMINATED','NORTHEAST','NORTHWEST','NOTEBOOKS','OBVIOUSLY','OCCURRING','OFFENSIVE','OPERATING','OPERATION','OPERATORS','OPPONENTS','ORCHESTRA','ORGANIZED','OURSELVES','OVERHEADS','PACKAGING','PARTIALLY','PARTICLES','PASSENGER','PASSWORDS','PATRONAGE','PERFECTLY','PERMANENT','PERMITTED','PERSONNEL','PETROLEUM','PHENOMENA','PLATFORMS','POLLUTION','POTENTIAL','PREDICTED','PREFERRED','PREGNANCY','PRESIDENT','PRIMARILY','PRINCIPLE','PRISONERS','PRIVATELY','PROCESSED','PROCESSES','PRODUCING','PROFESSOR','PROMINENT','PROMISING','PROMOTION','PROTECTED','PROTOCOLS','PUBLISHED','PUBLISHER','PURCHASES','QUALIFIED','QUARTERLY','QUESTIONS','REALISTIC','RECEIVING','RECOGNIZE','RECOMMEND','RECORDING','RECOVERED','REDUCTION','REFERENCE','REGULARLY','REGULATED','RELATIONS','RELATIVES','RELIGIONS','REMAINDER','REMAINING','RENEWABLE','REPLACING','REPORTING','REPRESENT','REQUESTED','REQUIRING','RESOURCES','RESPONDED','RESPONSES','RESULTING','RETAILERS','RETURNING','REVEALING','REVISIONS','REVOLVING','SATELLITE','SATISFIED','SCATTERED','SCENARIOS','SCHEDULED','SCREENING','SEARCHING','SECONDARY','SECRETARY','SELECTING','SENSITIVE','SEPTEMBER','SERIOUSLY','SHORTCUTS','SIGNATURE','SITUATION','SOMETIMES','SOMEWHERE','SOUTHEAST','SOUTHWEST','SPECIALLY','SPECIFIED','STANDARDS','STATEMENT','STATUTORY','STRUCTURE','SUBMITTED','SUCCEEDED','SUCCESSOR','SUFFERING','SUGGESTED','SUMMARIZE','SUPPORTED','SURPRISED','SURVIVING','SYNDICATE','SYNTHESIS','TARGETING','TECHNICAL','TELEPHONE','TERMINALS','TERRITORY','THRESHOLD','THUMBNAIL','TOLERANCE','TRADITION','TRANSFERS','TREATMENT','TROUBLING','TYPICALLY','UNCERTAIN','UNDEFINED','UNIVERSAL','UNLIMITED','UNSECURED','UNWILLING','VALIDATED','VARIATION','VARIETIES','VEGETABLE','VIOLATION','VIRTUALLY','VOLUNTARY','WANDERING','WAREHOUSE','WEDNESDAY','WHOLESALE','WONDERFUL','WORKPLACE','WORKSHEET','WORLDWIDE',
+        'INNOVATION','EXCELLENCE','OPERATIONS','LEADERSHIP','MANAGEMENT','INVESTMENT','TECHNOLOGY','TRANSITION','ABSOLUTELY','ACCOMPLISH','ACCOUNTING','ACTIVATING','ADDITIONAL','ADJUSTMENT','ADVANTAGES','ALGORITHMS','ALTOGETHER','ANALYTICAL','APARTMENTS','APPEARANCE','APPLICABLE','APPRECIATE','APPRENTICE','ARTIFICIAL','ASSISTANCE','ATMOSPHERE','ATTACHMENT','ATTRACTION','ATTRACTIVE','AUTOMOBILE','BASKETBALL','BENEFICIAL','BIOLOGICAL','BOUNDARIES','CALCULATOR','CANDIDATES','CAPABILITY','CAPTIVATED','CATEGORIES','CELEBRATED','CHALLENGES','CHARACTERS','CHARITABLE','CHECKPOINT','COLLECTION','COMMENTARY','COMMERCIAL','COMMISSION','COMMITMENT','COMPARABLE','COMPARISON','COMPATIBLE','COMPLEMENT','COMPLETELY','COMPLEXITY','COMPONENTS','COMPROMISE','COMPULSORY','CONCLUSION','CONCURRENT','CONDITIONS','CONFERENCE','CONFIDENCE','CONFIGURED','CONFIRMING','CONNECTION','CONSCIENCE','CONSIDERED','CONSISTENT','CONSTITUTE','CONSULTING','CONTAINERS','CONTINUING','CONTRIBUTE','CONTROLLED','CONVENIENT','CONVENTION','CONVICTION','COORDINATE','CORRUPTION','CURRICULUM','DEFINITELY','DEMOCRATIC','DEPARTMENT','DEPLOYMENT','DESCRIBING','DESIGNATED','DETERMINED','DEVELOPING','DICTIONARY','DIFFERENCE','DIFFICULTY','DIMENSIONS','DIRECTIONS','DISCIPLINE','DISCOVERED','DISCUSSING','DISTRIBUTE','DOCUMENTED','ECONOMICAL','EFFICIENCY','ELECTRONIC','EMPLOYMENT','ENCOURAGED','ENGAGEMENT','ENTERPRISE','ENTHUSIASM','EQUIVALENT','ESPECIALLY','EVERYTHING','EVERYWHERE','EXCELLENCE','EXCEPTIONS','EXCITEMENT','EXHIBITION','EXPERIENCE','EXPERIMENT','EXPRESSION','FACILITIES','FASCINATED','FEDERATION','FELLOWSHIP','FINGERTIPS','FOUNDATION','FULFILLING','FUNCTIONAL','GENERATION','GOVERNMENT','GRADUATION','HELICOPTER','HISTORICAL','HORIZONTAL','HYPOTHESES','IDENTIFIED','IMPORTANCE','IMPRESSION','INCREDIBLE','INDICATING','INDIVIDUAL','INDUSTRIAL','INEVITABLE','INFECTIOUS','INGREDIENT','INITIATIVE','INSPECTION','INSTALLING','INSTRUMENT','INTEGRATED','INTERESTED','INTERNALLY','INTRODUCED','JOURNALIST','LABORATORY','LITERATURE','MANUSCRIPT','MEANINGFUL','MECHANICAL','MEDITATION','MEMBERSHIP','MINORITIES','NETWORKING','NEWSLETTER','OCCUPATION','OPPOSITION','OPTIMISTIC','PARAMETERS','PASSIONATE','PERCENTAGE','PERCEPTION','PERSONALLY','PHENOMENON','PHOTOGRAPH','PHYSICALLY','PLAYGROUND','POLITICIAN','POPULATION','POSITIONED','POWERFULLY','PREFERENCE','PRESERVING','PREVIOUSLY','PROCESSING','PRODUCTION','PROFESSION','PROFITABLE','PROGRAMMER','PROJECTION','PROPERTIES','PROPORTION','PROTECTING','PSYCHOLOGY','PUBLISHING','PURCHASING','QUALIFYING','QUANTITIES','REASONABLE','RECOGNIZED','RECOMMENDS','RECREATION','REFERENCES','REFLECTION','REGARDLESS','REGISTERED','REGULATION','REINFORCED','RELATIVELY','REMARKABLE','REMEMBERED','REPETITION','REPRESENTS','REPUTATION','RESEARCHER','RESTRICTED','REVELATION','REVOLUTION','SACRIFICED','SATISFYING','SCHEDULING','SCIENTIFIC','SECURITIES','SELECTIONS','SETTLEMENT','SIGNATURES','SPECIALIST','STATISTICS','STRENGTHEN','STRUGGLING','SUBMISSION','SUBSEQUENT','SUFFICIENT','SUGGESTION','SUPERVISED','SUPPORTING','SURROUNDED','TELEVISION','THROUGHOUT','TOURNAMENT','TREMENDOUS','UNDERSTAND','UNEXPECTED','UNIVERSITY','VALIDATION','VARIATIONS','VOCABULARY','VOLLEYBALL','VULNERABLE','WATERPROOF','WIDESPREAD',
+        'COMPETITIVE','SUSTAINABLE','PERFORMANCE','ACQUISITION','ACHIEVEMENT','FLEXIBILITY','PARTNERSHIP','PERSONALITY','IMMEDIATELY','SUBSTANTIAL','DIVERSIFICATION',
+        'ABOUT','ABOVE','ABUSE','ACTOR','ACUTE','ADMIT','ADOPT','ADULT','AFTER','AGAIN','AGENT','AGREE','AHEAD','ALARM','ALBUM','ALERT','ALIEN','ALIGN','ALIKE','ALIVE','ALLOW','ALONE','ALONG','ALTER','AMONG','ANGER','ANGLE','ANGRY','APART','APPLE','APPLY','ARENA','ARGUE','ARISE','ARRAY','ASIDE','AVOID','AWAKE','AWARD','AWARE','BADLY','BAKER','BASES','BASIC','BEACH','BEGAN','BEGIN','BEING','BELOW','BENCH','BIRTH','BLACK','BLAME','BLANK','BLAST','BLIND','BLOCK','BLOOD','BOARD','BOAST','BOOST','BOOTH','BOUND','BRAIN','BRASS','BRAVE','BREAD','BREAK','BREED','BRIEF','BRING','BROAD','BROKE','BROWN','BUILD','BUILT','BUYER','CABLE','CARRY','CATCH','CAUSE','CHAIR','CHAOS','CHARM','CHART','CHASE','CHEAP','CHECK','CHEST','CHIEF','CHILD','CHINA','CHOSE','CIVIL','CLEAN','CLICK','CLIMB','CLOCK','COULD','COUNT','COURT','COVER','CRASH','CRAZY','CREAM','CRIME','CROSS','CROWD','CROWN','CRUDE','CURVE','DAILY','DANCE','DATED','DEALT','DEATH','DEBUT','DELAY','DEPTH','DOING','DOUBT','DOZEN','DRAMA','DRANK','DREAM','DRESS','DRILL','DRINK','DROVE','DYING','EAGER','EARLY','EARTH','EIGHT','ELITE','EMPTY','ENEMY','ENJOY','ENTER','EQUAL','ERROR','EVERY','EXIST','EXTRA','FAITH','FALSE','FAULT','FIBER','FIELD','FIFTH','FIFTY','FIGHT','FINAL','FIRST','FLASH','FLEET','FLOOR','FLUID','FORTH','FORTY','FORUM','FOUND','FRANK','FRAUD','FRESH','FRONT','FRUIT','FULLY','FUNNY','GHOST','GIVEN','GLASS','GLOBE','GOING','GRACE','GRADE','GRAND','GRASS','GRAVE','GREAT','GREEN','GROUP','GROWN','GUESS','GUEST','GUIDE','HAPPY','HEART','HEAVY','HENCE','HORSE','HOTEL','HOUSE','HURRY','IMAGE','INNER','JUICE','KNOWN','LABEL','LARGE','LASER','LATER','LAUGH','LAYER','LEARN','LEASE','LEAST','LEAVE','LEGAL','LIGHT','LINKS','LIVES','LOOSE','LOWER','LUCKY','LUNCH','LYING','MAGIC','MAKER','MARCH','MATCH','MAYBE','MAYOR','MEANT','MEDAL','MEDIA','METAL','MIGHT','MINUS','MIXED','MORAL','MOTOR','MOUNT','MOUSE','MOUTH','MOVED','MOVIE','MUSIC','NEEDS','NEVER','NEWLY','NIGHT','NOISE','NORTH','NOTED','NOVEL','NURSE','OCCUR','OCEAN','OFTEN','OUTER','OWNED','PAINT','PANEL','PAPER','PARTY','PEACE','PENNY','PIANO','PIECE','PILOT','PLAIN','PLANE','PLATE','POINT','POUND','PRESS','PRIDE','PRIME','PRINT','PRIOR','PROUD','QUEEN','QUIET','QUITE','RADIO','RAISE','RAPID','RATIO','REALM','REBEL','REIGN','RELAX','REPAY','REPLY','RIGHT','RIVAL','RIVER','ROMAN','ROUGH','ROYAL','RURAL','SCENE','SEVEN','SHALL','SHAME','SHAPE','SHARP','SHEET','SHIFT','SHINE','SHIRT','SHOCK','SHOOT','SHORT','SHOWN','SIGHT','SILLY','SINCE','SIXTH','SIXTY','SIZED','SLEEP','SLIDE','SMALL','SMILE','SMITH','SMOKE','SOLID','SORRY','SOUND','SOUTH','SPACE','SPARE','SPEAK','SPEED','SPENT','SPLIT','SPOKE','SPORT','STAGE','STEAM','STEEL','STEEP','STICK','STILL','STONE','STOOD','STORM','STORY','STRIP','STUCK','STUFF','SUGAR','SUITE','SWEET','SWING','TABLE','TAKEN','TASTE','TAXES','TEACH','TEETH','TEXAS','THANK','THEFT','THEIR','THERE','THESE','THICK','THING','THINK','THIRD','THOSE','THREE','THREW','THROW','THUMB','TIGER','TIGHT','TIMER','TIRED','TODAY','TOPIC','TOTAL','TOUCH','TOUGH','TOWER','TRAIL','TRAIN','TREAT','TRIAL','TRIBE','TRICK','TRIED','TRIES','TRUCK','TRULY','TRUNK','TRUTH','TWICE','UNCLE','UNDER','UNION','UNITY','UNTIL','UPPER','UPSET','URBAN','USUAL','VIDEO','VIRUS','VISIT','VITAL','VOCAL','VOICE','WATCH','WATER','WHEEL','WHERE','WHICH','WHILE','WHITE','WHOLE','WHOSE','WOMAN','WOMEN','WORLD','WORRY','WORSE','WORST','WOULD','WRONG','WROTE','YOUNG','YOUTH',
+        'ACCEPT','ACCESS','ACROSS','ACTION','ACTIVE','ACTUAL','ADVICE','ADVISE','AFFECT','AFFORD','AFRAID','AGENCY','AGENDA','ALMOST','ALWAYS','AMOUNT','ANIMAL','ANNUAL','ANSWER','ANYONE','ANYWAY','APPEAR','AROUND','ARRIVE','ARTIST','ASSUME','ATTACK','ATTEND','AUGUST','AUTHOR','AVENUE','BACKED','BARELY','BARREL','BATTLE','BEAUTY','BECOME','BEFORE','BEHALF','BEHAVE','BEHIND','BELIEF','BELONG','BETTER','BEYOND','BISHOP','BORDER','BOTTLE','BOTTOM','BOUGHT','BRANCH','BREATH','BRIDGE','BRIGHT','BROKEN','BURDEN','BUREAU','BUTTON','CAMERA','CANCER','CANNOT','CANVAS','CAREER','CASTLE','CASUAL','CAUGHT','CENTER','CENTRE','CHANCE','CHARGE','CHOICE','CHOOSE','CHOSEN','CHURCH','CIRCLE','CLIENT','CLOSED','CLOSER','COFFEE','COLUMN','COMBAT','COMING','COMMIT','COMMON','COMPLY','COPPER','CORNER','COSTLY','COUNTY','COUPLE','COURSE','COVERS','CREATE','CREDIT','CRISIS','CUSTOM','DANGER','DEALER','DEBATE','DECADE','DECIDE','DEFEAT','DEFEND','DEFINE','DEGREE','DEPEND','DEPUTY','DERIVE','DESIGN','DESIRE','DETAIL','DETECT','DEVICE','DIFFER','DINNER','DIRECT','DOCTOR','DOLLAR','DOMAIN','DOUBLE','DRAWER','DRIVER','DURING','EASILY','EATING','EDITOR','EFFECT','EFFORT','EIGHTH','EITHER','ELEVEN','EMERGE','EMPIRE','EMPLOY','ENABLE','ENDING','ENERGY','ENGINE','ENOUGH','ENSURE','ENTIRE','ENTITY','ESCAPE','ESTATE','ETHNIC','EUROPE','EXCEPT','EXCESS','EXCUSE','EXPAND','EXPECT','EXPERT','EXPOSE','EXTEND','EXTENT','FABRIC','FACIAL','FACTOR','FAILED','FAIRLY','FALLEN','FAMILY','FAMOUS','FATHER','FELLOW','FEMALE','FIGURE','FILING','FINGER','FINISH','FISCAL','FLIGHT','FLOWER','FLYING','FOLLOW','FORGET','FORMAL','FORMAT','FORMER','FOSTER','FOUGHT','FOURTH','FRANCE','FRIEND','FROZEN','FUTURE','GARDEN','GATHER','GENDER','GENTLE','GERMAN','GLOBAL','GOLDEN','GROUND','GUILTY','HANDED','HANDLE','HAPPEN','HARDLY','HEADED','HEALTH','HELPED','HIDDEN','HOLDER','HONEST','HORROR','IMPACT','INCOME','INDEED','INFORM','INJURY','INSECT','INSIDE','INTEND','INTENT','ISLAND','ITSELF','JERSEY','JUNIOR','KILLED','LABOUR','LADDER','LANDED','LARGER','LATEST','LATTER','LAWYER','LEAGUE','LENGTH','LESSON','LETTER','LIGHTS','LIKELY','LINKED','LIQUID','LISTEN','LITTLE','LIVING','LOOKED','LOSING','LUXURY','MAINLY','MAKING','MANNER','MARKED','MASTER','MATTER','MATURE','MEDIUM','MEMBER','MEMORY','MENTAL','MERELY','MIRROR','MODERN','MODIFY','MOMENT','MONDAY','MOTHER','MOTION','MOVING','MURDER','MUSCLE','MUSEUM','MYSELF','NARROW','NATION','NATIVE','NATURE','NEARBY','NEARLY','NEEDLE','NICELY','NOBODY','NORMAL','NUMBER','OBJECT','OBTAIN','PALACE','PARENT','PARTLY','PATROL','PAYING','PHRASE','PICKED','PIECES','PLACED','PLANET','PLAYER','PLEASE','PLENTY','POCKET','POLICE','POTATO','POWDER','PREFER','PRETTY','PRIEST','PRINCE','PRISON','PROPER','PROVEN','PUBLIC','PURPLE','PURSUE','PUSHED','PUZZLE','RABBIT','RACIAL','RATHER','RATING','READER','REALLY','REASON','RECALL','RECENT','RECORD','REDUCE','REFORM','REFUSE','REGARD','REGION','RELATE','RELIEF','REMAIN','REMOTE','REMOVE','REPAIR','REPEAT','REPORT','RESCUE','RESIST','RESORT','RESULT','RETAIL','REVEAL','RIDING','RISING','ROBUST','ROLLER','RULING','SACRED','SAFELY','SAYING','SCHOOL','SCREEN','SCRIPT','SECRET','SECURE','SEEING','SENATE','SEVERE','SHADOW','SHARED','SHIELD','SHOULD','SHOWED','SHOWER','SIGNED','SILENT','SILVER','SLIGHT','SMOOTH','SODIUM','SOLELY','SOUGHT','SPIRIT','SPRING','SQUARE','STOLEN','STREAM','STRICT','STRUCK','SUDDEN','SUFFER','SUMMER','SUNDAY','SURELY','TEMPLE','TENANT','TENNIS','TERROR','THANKS','THIRTY','THOUGH','THREAD','THREAT','THRONE','THROWN','TICKET','TIMBER','TOILET','TONGUE','TRAVEL','TRYING','TUNNEL','UNABLE','UNFAIR','UNLIKE','VALLEY','VICTIM','VIEWER','VIOLET','VIRGIN','WAITED','WALKER','WANTED','WARREN','WEAPON','WINTER','WONDER','WOODEN','YELLOW'
+    ];
+
+    // Game state
+    var currentWord = DEFAULT_WORD;
+    var currentGuess = '';
+    var currentRow = 0;
+    var gameWon = false;
+    var gameOver = false;
+    var guessedLetters = {};
+
+    // DOM elements
+    var gridContainer = document.getElementById('wg-grid-container');
+    var messageEl = document.getElementById('wg-message');
+    var hintEl = document.getElementById('wg-hint');
+
+    // ===== EDUCATOR SETUP =====
+    var setupLink = document.getElementById('wg-educator-link');
+    var modal = document.getElementById('wg-modal-overlay');
+    var modalInput = document.getElementById('wg-modal-input');
+    var modalError = document.getElementById('wg-modal-error');
+    var clickCount = 0;
+    var clickTimer = null;
+
+    setupLink.addEventListener('click', function() {
+        clickCount++;
+        if (clickCount === 3) {
+            clickCount = 0;
+            clearTimeout(clickTimer);
+            openModal();
+        } else {
+            clearTimeout(clickTimer);
+            clickTimer = setTimeout(function() { clickCount = 0; }, 600);
+        }
+    });
+
+    function openModal() {
+        modalInput.value = '';
+        modalError.textContent = '';
+        modal.style.display = 'flex';
+        setTimeout(function() { modalInput.focus(); }, 100);
+    }
+
+    function closeModal() {
+        modal.style.display = 'none';
+    }
+
+    document.getElementById('wg-modal-cancel').addEventListener('click', closeModal);
+    modal.addEventListener('click', function(e) {
+        if (e.target === modal) closeModal();
+    });
+
+    modalInput.addEventListener('keydown', function(e) {
+        if (e.key === 'Enter') { e.preventDefault(); setWordFromModal(); }
+        if (e.key === 'Escape') { e.preventDefault(); closeModal(); }
+    });
+
+    document.getElementById('wg-modal-set').addEventListener('click', setWordFromModal);
+
+    function setWordFromModal() {
+        var word = modalInput.value.trim().toUpperCase();
+        if (word.length < 3 || word.length > 14) {
+            modalError.textContent = 'Word must be between 3 and 14 letters.';
+            return;
+        }
+        if (!/^[A-Z]+$/.test(word)) {
+            modalError.textContent = 'Word must contain only letters (A-Z).';
+            return;
+        }
+        currentWord = word;
+        if (VALID_WORDS.indexOf(word) === -1) {
+            VALID_WORDS.push(word);
+        }
+        closeModal();
+        startNewGame();
+    }
+
+    // ===== KEYBOARD SETUP =====
+    var keys = document.querySelectorAll('.wg-key');
+    keys.forEach(function(key) {
+        key.addEventListener('click', function() {
+            var k = this.getAttribute('data-wg-key');
+            if (k === 'ENTER') handleEnter();
+            else if (k === 'BACKSPACE') handleBackspace();
+            else handleKeyPress(k);
+        });
+    });
+
+    document.addEventListener('keydown', function(e) {
+        if (modal.style.display === 'flex') return;
+        if (gameOver) return;
+        var key = e.key.toUpperCase();
+        if (key.match(/^[A-Z]$/) && key.length === 1) {
+            handleKeyPress(key);
+        } else if (e.key === 'Backspace') {
+            handleBackspace();
+        } else if (e.key === 'Enter') {
+            handleEnter();
+        }
+    });
+
+    document.getElementById('wg-reset-btn').addEventListener('click', function() {
+        startNewGame();
+    });
+
+    // ===== GAME FUNCTIONS =====
+    function startNewGame() {
+        currentGuess = '';
+        currentRow = 0;
+        gameWon = false;
+        gameOver = false;
+        guessedLetters = {};
+        messageEl.textContent = '';
+        messageEl.style.color = '';
+        hintEl.textContent = 'Guess the ' + currentWord.length + '-letter word';
+        createGrid();
+        resetKeyboard();
+    }
+
+    function createGrid() {
+        gridContainer.innerHTML = '';
+        var wordLength = currentWord.length;
+        var grid = document.createElement('div');
+        grid.style.display = 'grid';
+        grid.style.gridTemplateColumns = 'repeat(' + wordLength + ', 1fr)';
+        grid.style.gridTemplateRows = 'repeat(6, 1fr)';
+        grid.style.gap = '5px';
+        grid.style.maxWidth = Math.min(wordLength * 58, 520) + 'px';
+        grid.style.margin = '0 auto';
+
+        for (var row = 0; row < 6; row++) {
+            for (var col = 0; col < wordLength; col++) {
+                var cell = document.createElement('div');
+                cell.id = 'wg-cell-' + row + '-' + col;
+                cell.style.cssText = 'width: 50px; height: 50px; border: 2px solid #3a3a3c; display: flex; justify-content: center; align-items: center; font-size: 22px; font-weight: bold; background-color: #121213; color: white; border-radius: 3px; text-transform: uppercase;';
+                grid.appendChild(cell);
+            }
+        }
+        gridContainer.appendChild(grid);
+    }
+
+    function handleKeyPress(letter) {
+        if (gameOver || currentGuess.length >= currentWord.length) return;
+        currentGuess += letter;
+        var col = currentGuess.length - 1;
+        var cell = document.getElementById('wg-cell-' + currentRow + '-' + col);
+        cell.textContent = letter;
+        cell.style.borderColor = '#565758';
+        cell.style.animation = 'wordle-pop 0.1s ease';
+        setTimeout(function() { cell.style.animation = ''; }, 100);
+    }
+
+    function handleBackspace() {
+        if (gameOver || currentGuess.length === 0) return;
+        currentGuess = currentGuess.slice(0, -1);
+        var cell = document.getElementById('wg-cell-' + currentRow + '-' + currentGuess.length);
+        cell.textContent = '';
+        cell.style.borderColor = '#3a3a3c';
+    }
+
+    function handleEnter() {
+        if (gameOver || currentGuess.length !== currentWord.length) return;
+
+        var guess = currentGuess.toUpperCase();
+
+        if (VALID_WORDS.indexOf(guess) === -1) {
+            messageEl.textContent = 'Not a valid word!';
+            messageEl.style.color = '#f5793a';
+            for (var i = 0; i < currentWord.length; i++) {
+                (function(idx) {
+                    var cell = document.getElementById('wg-cell-' + currentRow + '-' + idx);
+                    cell.style.animation = 'wordle-shake 0.5s ease-in-out';
+                    setTimeout(function() { cell.style.animation = ''; }, 500);
+                })(i);
+            }
+            setTimeout(function() {
+                if (!gameOver) messageEl.textContent = '';
+            }, 2000);
+            return;
+        }
+
+        evaluateGuess(guess);
+
+        if (guess === currentWord) {
+            gameWon = true;
+            gameOver = true;
+            messageEl.textContent = 'Congratulations! You got it!';
+            messageEl.style.color = '#538d4e';
+        } else if (currentRow >= 5) {
+            gameOver = true;
+            messageEl.textContent = 'The word was: ' + currentWord;
+            messageEl.style.color = '#f5793a';
+        }
+
+        currentRow++;
+        currentGuess = '';
+    }
+
+    function evaluateGuess(guess) {
+        var wordArray = currentWord.split('');
+        var guessArray = guess.split('');
+        var result = [];
+        var wordCopy = wordArray.slice();
+
+        for (var i = 0; i < guessArray.length; i++) result.push('absent');
+
+        for (var i = 0; i < guessArray.length; i++) {
+            if (guessArray[i] === wordArray[i]) {
+                result[i] = 'correct';
+                wordCopy[i] = null;
+                updateKeyLetter(guessArray[i], 'correct');
+            }
+        }
+
+        for (var i = 0; i < guessArray.length; i++) {
+            if (result[i] === 'absent') {
+                var letterIndex = wordCopy.indexOf(guessArray[i]);
+                if (letterIndex !== -1) {
+                    result[i] = 'present';
+                    wordCopy[letterIndex] = null;
+                    if (guessedLetters[guessArray[i]] !== 'correct') {
+                        updateKeyLetter(guessArray[i], 'present');
+                    }
+                } else {
+                    updateKeyLetter(guessArray[i], 'absent');
+                }
+            }
+        }
+
+        var colorMap = { correct: '#538d4e', present: '#b59f3b', absent: '#3a3a3c' };
+        for (var i = 0; i < guessArray.length; i++) {
+            (function(idx, status) {
+                var cell = document.getElementById('wg-cell-' + currentRow + '-' + idx);
+                cell.textContent = guessArray[idx];
+                setTimeout(function() {
+                    cell.style.animation = 'wordle-flip 0.4s ease';
+                    setTimeout(function() {
+                        cell.style.backgroundColor = colorMap[status];
+                        cell.style.borderColor = colorMap[status];
+                        cell.style.animation = '';
+                    }, 200);
+                }, idx * 120);
+            })(i, result[i]);
+        }
+    }
+
+    function updateKeyLetter(letter, status) {
+        if (guessedLetters[letter] === 'correct') return;
+        guessedLetters[letter] = status;
+        var colorMap = { correct: '#538d4e', present: '#b59f3b', absent: '#3a3a3c' };
+        keys.forEach(function(key) {
+            if (key.getAttribute('data-wg-key') === letter) {
+                key.style.backgroundColor = colorMap[status];
+            }
+        });
+    }
+
+    function resetKeyboard() {
+        keys.forEach(function(key) {
+            key.style.backgroundColor = '#818384';
+        });
+    }
+
+    startNewGame();
+})();
+</script>

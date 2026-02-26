@@ -1,0 +1,16 @@
+# Draft documents and working files
+*.docx
+*.rtf
+*.pdf
+
+# macOS
+.DS_Store
+
+# IDE/editor
+.vscode/
+.claude/
+
+# Original source folders (kept locally, not in repo)
+/Number Guessing Game/
+/MTR Lit/
+/Other lit/
