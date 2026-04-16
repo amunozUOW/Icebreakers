@@ -92,9 +92,7 @@ This project is licensed under the MIT License. See [LICENSE](LICENSE) for detai
 
 ## Citation
 
-If you use these activities in your teaching or research, please cite the accompanying paper:
-
-> Munoz Aneiros, A. (forthcoming). Leveraging generative AI capabilities to adapt higher education practice: A case of vibe coding for developing icebreaker activities. *Management Teaching Review*.
+If you use these activities in your teaching or research, please acknowledge Dr. Albert Munoz (amunoz@uow.edu.au).
 
 ## Contributing
 
